@@ -8,7 +8,8 @@ interface ISlideProps {
 function CarouselSlide({ item }: ISlideProps): React.ReactElement<any> {
   return (
     <figure style={{ margin: 0, minWidth: "100vw", height: "100%" }}>
-      <img src={item.imageURL} alt={item.description} />
+      {item.imageURL && <img src={item.imageURL} alt={item.description} />}
+      {item.render && item.render(item)}
     </figure>
   );
 }
