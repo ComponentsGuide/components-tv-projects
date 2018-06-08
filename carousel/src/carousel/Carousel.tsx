@@ -46,6 +46,7 @@ interface IFrameProps {
 
 interface IFrameState {
   offset: number
+  offsetChangeRemaining: number
 }
 
 // async function nextFrame(): Promise<number> {
@@ -56,7 +57,8 @@ interface IFrameState {
 
 class CarouselFrame extends React.Component<IFrameProps, IFrameState> {
   state = {
-    offset: 0
+    offset: 0,
+    offsetChangeRemaining: 0
   }
 
   get maxOffset() {
@@ -64,26 +66,42 @@ class CarouselFrame extends React.Component<IFrameProps, IFrameState> {
   }
 
   private changeOffsetBy(change: number) {
+    let frameChange = change / 20.0
+    let currentChange = 0.0
     let startOffset = this.state.offset
-    const endOffset = startOffset + change
-    let currentOffset = startOffset
-    const frameChange = change / 20.0
 
+    this.setState(({ offset, offsetChangeRemaining }) => {
+      startOffset = Math.round(offset + offsetChangeRemaining)
+      return {
+        offset: startOffset,
+        offsetChangeRemaining: change
+      }
+    })
+    
+    
     const updateState = () => {
-      currentOffset = Math.min(currentOffset + frameChange, endOffset)
-      // const clampedOffset = (currentOffset + this.maxOffset) % this.maxOffset
-      this.setState({ offset: currentOffset })
-
-      if (currentOffset < endOffset) {
+      currentChange = currentChange + frameChange
+      let currentOffset = startOffset + currentChange
+      
+      if (Math.abs(currentChange) < Math.abs(change)) {
         requestAnimationFrame(updateState)
       }
+      else {
+        currentOffset = Math.round(currentOffset)
+        currentChange = change
+      }
+
+      this.setState({
+        offset: currentOffset,
+        offsetChangeRemaining: change - currentChange
+      })
     }
 
     requestAnimationFrame(updateState)
   }
 
   private onGoPrevious = () => {
-    this.setState(({ offset }) => ({ offset: (offset + this.maxOffset - 1.0) % this.maxOffset }))
+    this.changeOffsetBy(-1.0)
   }
 
   private onGoNext = () => {
@@ -93,7 +111,7 @@ class CarouselFrame extends React.Component<IFrameProps, IFrameState> {
   public render() {
     const { items, renderNav } = this.props
     const { offset } = this.state
-    const clampedOffset = (offset + this.maxOffset) % this.maxOffset
+    const clampedOffset = ((offset + this.maxOffset) % this.maxOffset + this.maxOffset) % this.maxOffset
     return <div>
       <div style={{ overflow: 'hidden' }}>
         <CarouselTrack items={items} offset={clampedOffset} />
