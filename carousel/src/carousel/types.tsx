@@ -1,4 +1,4 @@
 export interface ICarouselItem {
-  imageURL: string
-  description: string
+  imageURL: string;
+  description: string;
 }
