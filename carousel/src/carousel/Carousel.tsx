@@ -7,9 +7,9 @@ interface ISlideProps {
 
 function CarouselSlide({ item }: ISlideProps): React.ReactElement<any> {
   return (
-    <div style={{ minWidth: '100vw', height: '100%' }}>
+    <figure style={{ margin: 0, minWidth: '100vw', height: '100%' }}>
       <img src={ item.imageURL } alt={ item.description } />
-    </div>
+    </figure>
   )
 }
 
