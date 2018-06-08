@@ -71,13 +71,13 @@ class CarouselFrame extends React.Component<IFrameProps, IFrameState> {
     let startOffset = this.state.offset
 
     this.setState(({ offset, offsetChangeRemaining }) => {
-      startOffset = Math.round(offset + offsetChangeRemaining)
+      change = change + offsetChangeRemaining
+      frameChange = change / 20.0
+      startOffset = offset
       return {
-        offset: startOffset,
         offsetChangeRemaining: change
       }
     })
-    
     
     const updateState = () => {
       currentChange = currentChange + frameChange
